@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <meta name="mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="theme-color" content="#0f0f13"/>
+  <title>Taskboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #0f0f13;
+      --surface: #1a1a22;
+      --surface2: #22222e;
+      --ink: #f0eee8;
+      --ink-dim: #7a7a90;
+      --accent: #ff6b35;
+      --accent2: #ffd166;
+      --border: #2a2a38;
+      --cat-work: #4facfe;
+      --cat-personal: #a78bfa;
+      --cat-health: #34d399;
+      --cat-shopping: #fbbf24;
+      --cat-other: #94a3b8;
+      --radius: 16px;
+      --bottom-nav: 70px;
+    }
+
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+      max-width: 480px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* ── TOP HEADER ── */
+    .app-header {
+      padding: 52px 20px 16px;
+      flex-shrink: 0;
+      background: var(--bg);
+    }
+
+    .header-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .app-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.9rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    .app-title span { color: var(--accent); }
+
+    .summary-pill {
+      background: var(--surface2);
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 0.78rem;
+      color: var(--ink-dim);
+      font-weight: 500;
+    }
+
+    .summary-pill b { color: var(--accent2); font-weight: 600; }
+
+    /* ── FILTER CHIPS ── */
+    .chip-scroll {
+      padding: 10px 20px 4px;
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      flex-shrink: 0;
+    }
+
+    .chip-scroll::-webkit-scrollbar { display: none; }
+
+    .chip {
+      flex-shrink: 0;
+      scroll-snap-align: start;
+      padding: 7px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      border: 1.5px solid var(--border);
+      background: none;
+      color: var(--ink-dim);
+      cursor: pointer;
+      transition: all 0.18s;
+      white-space: nowrap;
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .chip.active-chip { border-color: var(--accent); color: var(--accent); background: rgba(255,107,53,0.1); }
+    .chip.cat-work.active-chip    { border-color: var(--cat-work); color: var(--cat-work); background: rgba(79,172,254,0.1); }
+    .chip.cat-personal.active-chip { border-color: var(--cat-personal); color: var(--cat-personal); background: rgba(167,139,250,0.1); }
+    .chip.cat-health.active-chip  { border-color: var(--cat-health); color: var(--cat-health); background: rgba(52,211,153,0.1); }
+    .chip.cat-shopping.active-chip { border-color: var(--cat-shopping); color: var(--cat-shopping); background: rgba(251,191,36,0.1); }
+    .chip.cat-other.active-chip   { border-color: var(--cat-other); color: var(--cat-other); background: rgba(148,163,184,0.1); }
+
+    /* ── SCROLL AREA ── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px 16px calc(var(--bottom-nav) + 20px);
+      scrollbar-width: none;
+    }
+
+    .scroll-area::-webkit-scrollbar { display: none; }
+
+    /* ── TASK CARD ── */
+    .task-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 15px 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      animation: popIn 0.22s cubic-bezier(0.34,1.56,0.64,1);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.15s;
+      user-select: none;
+    }
+
+    .task-card:active { transform: scale(0.98); }
+
+    .task-card::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .task-card.cat-work::before    { background: var(--cat-work); }
+    .task-card.cat-personal::before { background: var(--cat-personal); }
+    .task-card.cat-health::before  { background: var(--cat-health); }
+    .task-card.cat-shopping::before { background: var(--cat-shopping); }
+    .task-card.cat-other::before   { background: var(--cat-other); }
+
+    .task-card.done { opacity: 0.5; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.94) translateY(6px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    /* CHECKBOX */
+    .check-circle {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .task-card.cat-work .check-circle     { border-color: var(--cat-work); }
+    .task-card.cat-personal .check-circle  { border-color: var(--cat-personal); }
+    .task-card.cat-health .check-circle   { border-color: var(--cat-health); }
+    .task-card.cat-shopping .check-circle  { border-color: var(--cat-shopping); }
+    .task-card.cat-other .check-circle    { border-color: var(--cat-other); }
+
+    .check-circle.done-check { background: var(--accent); border-color: var(--accent); }
+
+    .check-icon { display: none; }
+    .check-circle.done-check .check-icon { display: block; }
+
+    /* TASK BODY */
+    .task-body { flex: 1; min-width: 0; }
+
+    .task-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .done .task-name {
+      text-decoration: line-through;
+      color: var(--ink-dim);
+    }
+
+    .task-foot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 5px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 2px 7px;
+      border-radius: 20px;
+    }
+
+    .task-card.cat-work .badge    { background: rgba(79,172,254,0.15); color: var(--cat-work); }
+    .task-card.cat-personal .badge { background: rgba(167,139,250,0.15); color: var(--cat-personal); }
+    .task-card.cat-health .badge  { background: rgba(52,211,153,0.15); color: var(--cat-health); }
+    .task-card.cat-shopping .badge { background: rgba(251,191,36,0.15); color: var(--cat-shopping); }
+    .task-card.cat-other .badge   { background: rgba(148,163,184,0.15); color: var(--cat-other); }
+
+    .due-tag {
+      font-size: 0.72rem;
+      color: var(--ink-dim);
+      font-weight: 500;
+    }
+
+    .due-tag.overdue { color: var(--accent); }
+
+    /* DELETE SWIPE AREA / BUTTON */
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--ink-dim);
+      padding: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      border-radius: 10px;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .del-btn:active { color: var(--accent); background: rgba(255,107,53,0.15); }
+
+    /* ── SECTION HEADING ── */
+    .sec-head {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--ink-dim);
+      margin: 18px 0 10px 2px;
+    }
+
+    .sec-head:first-child { margin-top: 4px; }
+
+    /* ── EMPTY ── */
+    .empty {
+      text-align: center;
+      padding: 50px 20px;
+      color: var(--ink-dim);
+      font-size: 0.88rem;
+    }
+
+    .empty-icon { font-size: 2.4rem; margin-bottom: 10px; }
+
+    /* ── BOTTOM NAV / ADD BUTTON ── */
+    .bottom-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 480px;
+      height: var(--bottom-nav);
+      background: linear-gradient(to top, var(--bg) 70%, transparent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 10px;
+      z-index: 50;
+    }
+
+    .fab {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 50px;
+      padding: 14px 32px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(255,107,53,0.4);
+      transition: transform 0.15s, box-shadow 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.2px;
+    }
+
+    .fab:active { transform: scale(0.96); box-shadow: 0 4px 12px rgba(255,107,53,0.3); }
+
+    /* ── BOTTOM SHEET ── */
+    .sheet-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s;
+      backdrop-filter: blur(3px);
+    }
+
+    .sheet-overlay.open { opacity: 1; pointer-events: all; }
+
+    .sheet {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%) translateY(100%);
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border-radius: 24px 24px 0 0;
+      padding: 12px 20px 40px;
+      z-index: 101;
+      transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+
+    .sheet.open { transform: translateX(-50%) translateY(0); }
+
+    .sheet-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--border);
+      border-radius: 4px;
+      margin: 0 auto 20px;
+    }
+
+    .sheet h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .field-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--ink-dim);
+      margin-bottom: 8px;
+    }
+
+    .field-group { margin-bottom: 16px; }
+
+    .sheet input[type="text"],
+    .sheet input[type="date"] {
+      width: 100%;
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      font-family: 'Nunito', sans-serif;
+      font-size: 1rem;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.18s;
+      -webkit-appearance: none;
+    }
+
+    .sheet input:focus { border-color: var(--accent); }
+
+    /* Cat selector grid */
+    .cat-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+
+    .cat-opt {
+      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 4px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.18s;
+      font-size: 0.65rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: var(--ink-dim);
+      font-family: 'Nunito', sans-serif;
+    }
+
+    .cat-opt .cat-icon { font-size: 1.3rem; display: block; margin-bottom: 3px; }
+
+    .cat-opt.sel-work    { border-color: var(--cat-work); color: var(--cat-work); background: rgba(79,172,254,0.12); }
+    .cat-opt.sel-personal { border-color: var(--cat-personal); color: var(--cat-personal); background: rgba(167,139,250,0.12); }
+    .cat-opt.sel-health  { border-color: var(--cat-health); color: var(--cat-health); background: rgba(52,211,153,0.12); }
+    .cat-opt.sel-shopping { border-color: var(--cat-shopping); color: var(--cat-shopping); background: rgba(251,191,36,0.12); }
+    .cat-opt.sel-other   { border-color: var(--cat-other); color: var(--cat-other); background: rgba(148,163,184,0.12); }
+
+    .sheet-submit {
+      width: 100%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      padding: 16px;
+      font-family: 'Syne', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: transform 0.15s;
+      letter-spacing: 0.3px;
+    }
+
+    .sheet-submit:active { transform: scale(0.98); }
+
+    /* date input color fix for dark */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+      opacity: 0.5;
+    }
+
+    /* Overdue highlight */
+    .overdue-card { border-color: rgba(255,107,53,0.3) !important; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-row">
+    <div class="app-title">Task<span>board</span></div>
+    <div class="summary-pill" id="summary-pill">0 tasks</div>
+  </div>
+</div>
+
+<!-- FILTER CHIPS -->
+<div class="chip-scroll" id="chip-scroll">
+  <button class="chip active-chip" data-filter="all">All</button>
+  <button class="chip active-chip" data-filter="active" style="display:none" id="active-chip">Active</button>
+  <button class="chip" data-filter="active">Active</button>
+  <button class="chip" data-filter="done">Done</button>
+  <button class="chip cat-work" data-cat="work">💼 Work</button>
+  <button class="chip cat-personal" data-cat="personal">🏠 Personal</button>
+  <button class="chip cat-health" data-cat="health">🏃 Health</button>
+  <button class="chip cat-shopping" data-cat="shopping">🛒 Shopping</button>
+  <button class="chip cat-other" data-cat="other">📌 Other</button>
+</div>
+
+<!-- SCROLL AREA -->
+<div class="scroll-area" id="scroll-area"></div>
+
+<!-- FAB -->
+<div class="bottom-bar">
+  <button class="fab" id="open-sheet">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    New Task
+  </button>
+</div>
+
+<!-- BOTTOM SHEET OVERLAY -->
+<div class="sheet-overlay" id="overlay"></div>
+
+<!-- BOTTOM SHEET -->
+<div class="sheet" id="sheet">
+  <div class="sheet-handle"></div>
+  <h2>Add a Task</h2>
+
+  <div class="field-group">
+    <div class="field-label">Task name</div>
+    <input type="text" id="task-input" placeholder="What needs to be done?" autocomplete="off"/>
+  </div>
+
+  <div class="field-group">
+    <div class="field-label">Category</div>
+    <div class="cat-grid" id="cat-grid">
+      <button class="cat-opt sel-work" data-cat="work"><span class="cat-icon">💼</span>Work</button>
+      <button class="cat-opt" data-cat="personal"><span class="cat-icon">🏠</span>Personal</button>
+      <button class="cat-opt" data-cat="health"><span class="cat-icon">🏃</span>Health</button>
+      <button class="cat-opt" data-cat="shopping"><span class="cat-icon">🛒</span>Shopping</button>
+      <button class="cat-opt" data-cat="other"><span class="cat-icon">📌</span>Other</button>
+    </div>
+  </div>
+
+  <div class="field-group">
+    <div class="field-label">Due date (optional)</div>
+    <input type="date" id="due-input"/>
+  </div>
+
+  <button class="sheet-submit" id="submit-btn">Add Task →</button>
+</div>
+
+<script>
+  // ── State ──
+  let tasks = JSON.parse(localStorage.getItem('tb_tasks') || '[]');
+  let filterStatus = 'all';
+  let filterCat = null;
+  let selectedCat = 'work';
+
+  function save() { localStorage.setItem('tb_tasks', JSON.stringify(tasks)); }
+
+  // ── Render ──
+  function render() {
+    const area = document.getElementById('scroll-area');
+    area.innerHTML = '';
+    const today = new Date().toISOString().slice(0,10);
+
+    let visible = tasks.filter(t => {
+      if (filterCat && t.cat !== filterCat) return false;
+      if (filterStatus === 'active' && t.done) return false;
+      if (filterStatus === 'done' && !t.done) return false;
+      return true;
+    });
+
+    const active = visible.filter(t => !t.done);
+    const done   = visible.filter(t => t.done);
+
+    if (filterStatus !== 'done') {
+      if (active.length === 0) {
+        area.innerHTML += `<div class="sec-head">Active</div><div class="empty"><div class="empty-icon">✨</div>All clear!</div>`;
+      } else {
+        area.innerHTML += `<div class="sec-head">Active — ${active.length}</div>`;
+        active.forEach(t => area.appendChild(makeCard(t, today)));
+      }
+    }
+
+    if (filterStatus !== 'active' && done.length > 0) {
+      const d = document.createElement('div');
+      d.className = 'sec-head';
+      d.textContent = `Completed — ${done.length}`;
+      area.appendChild(d);
+      done.forEach(t => area.appendChild(makeCard(t, today)));
+    }
+
+    // Summary
+    const total = tasks.length;
+    const doneN = tasks.filter(t => t.done).length;
+    const over  = tasks.filter(t => !t.done && t.due && t.due < today).length;
+    const pill  = document.getElementById('summary-pill');
+    pill.innerHTML = total === 0
+      ? '0 tasks'
+      : `<b>${doneN}/${total}</b> done${over ? ` · ⚠️ ${over}` : ''}`;
+  }
+
+  function makeCard(task, today) {
+    const card = document.createElement('div');
+    const over = !task.done && task.due && task.due < today;
+    card.className = `task-card cat-${task.cat}${task.done ? ' done' : ''}${over ? ' overdue-card' : ''}`;
+
+    const catLabel = { work:'Work', personal:'Personal', health:'Health', shopping:'Shopping', other:'Other' }[task.cat];
+    const dateStr  = task.due ? formatDate(task.due) : '';
+
+    card.innerHTML = `
+      <div class="check-circle ${task.done ? 'done-check' : ''}">
+        <svg class="check-icon" width="13" height="11" viewBox="0 0 13 11" fill="none">
+          <path d="M1.5 5.5L5 9L11.5 1.5" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="task-body">
+        <div class="task-name">${escHtml(task.text)}</div>
+        <div class="task-foot">
+          <span class="badge">${catLabel}</span>
+          ${dateStr ? `<span class="due-tag ${over ? 'overdue' : ''}">📅 ${dateStr}${over ? ' · Overdue' : ''}</span>` : ''}
+        </div>
+      </div>
+      <button class="del-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+        </svg>
+      </button>
+    `;
+
+    card.querySelector('.check-circle').addEventListener('click', () => {
+      task.done = !task.done; save(); render();
+    });
+
+    card.querySelector('.del-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      card.style.transition = 'opacity 0.2s, transform 0.2s';
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.92)';
+      setTimeout(() => { tasks = tasks.filter(t => t.id !== task.id); save(); render(); }, 200);
+    });
+
+    return card;
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function formatDate(iso) {
+    const [y,m,d] = iso.split('-');
+    return new Date(y,m-1,d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  }
+
+  // ── Bottom Sheet ──
+  const sheet   = document.getElementById('sheet');
+  const overlay = document.getElementById('overlay');
+
+  function openSheet() {
+    sheet.classList.add('open');
+    overlay.classList.add('open');
+    setTimeout(() => document.getElementById('task-input').focus(), 350);
+  }
+
+  function closeSheet() {
+    sheet.classList.remove('open');
+    overlay.classList.remove('open');
+  }
+
+  document.getElementById('open-sheet').addEventListener('click', openSheet);
+  overlay.addEventListener('click', closeSheet);
+
+  // Swipe down to close
+  let startY = 0;
+  sheet.addEventListener('touchstart', e => { startY = e.touches[0].clientY; }, { passive: true });
+  sheet.addEventListener('touchend', e => {
+    if (e.changedTouches[0].clientY - startY > 80) closeSheet();
+  }, { passive: true }
