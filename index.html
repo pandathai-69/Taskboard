@@ -636,4 +636,67 @@
   sheet.addEventListener('touchend', e => {
     if (e.changedTouches[0].clientY - startY > 80) closeSheet();
   }, { passive: true }
-  </html>
+
+      
+  // ── Category picker ──
+  document.querySelectorAll('.cat-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.cat-opt').forEach(b => b.className = 'cat-opt');
+      btn.classList.add(`sel-${btn.dataset.cat}`);
+      selectedCat = btn.dataset.cat;
+    });
+  });
+
+  // ── Add task ──
+  function addTask() {
+    const text = document.getElementById('task-input').value.trim();
+    if (!text) { document.getElementById('task-input').focus(); return; }
+    tasks.unshift({
+      id: Date.now(),
+      text,
+      cat: selectedCat,
+      due: document.getElementById('due-input').value || null,
+      done: false
+    });
+    save(); render(); closeSheet();
+    document.getElementById('task-input').value = '';
+    document.getElementById('due-input').value  = '';
+  }
+
+  document.getElementById('submit-btn').addEventListener('click', addTask);
+  document.getElementById('task-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') addTask();
+  });
+
+  // ── Filters ──
+  const chipScroll = document.getElementById('chip-scroll');
+  chipScroll.querySelectorAll('.chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.dataset.filter) {
+        filterStatus = btn.dataset.filter;
+        chipScroll.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active-chip'));
+        btn.classList.add('active-chip');
+      } else if (btn.dataset.cat) {
+        const cat = btn.dataset.cat;
+        if (filterCat === cat) {
+          filterCat = null;
+          btn.classList.remove('active-chip');
+        } else {
+          filterCat = cat;
+          chipScroll.querySelectorAll('[data-cat]').forEach(b => b.classList.remove('active-chip'));
+          btn.classList.add('active-chip');
+        }
+      }
+      render();
+    });
+  });
+
+  // Fix: clean up duplicate chip button (leftover from template)
+  document.querySelectorAll('[data-filter="active"]').forEach((b,i) => { if(i>0) b.remove(); });
+
+  render();
+</script>
+</body>
+</html>
+
+
