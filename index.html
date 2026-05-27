@@ -174,14 +174,21 @@ input[type=text]:focus,input[type=date]:focus{border-color:#ff6b35}
     document.getElementById('f-all').className = f==='all' ? 'active' : '';
     document.getElementById('f-active').className = f==='active' ? 'active' : '';
     document.getElementById('f-done').className = f==='done' ? 'active' : '';
-    // Splash screen
+    render();
+
+  // Splash screen — hide after app is ready
   var splash = document.getElementById('splash');
   var bar = document.getElementById('bar');
-  setTimeout(function(){ bar.style.width = '100%'; }, 50);
-  setTimeout(function(){ splash.style.transition = 'opacity 0.4s'; splash.style.opacity = '0'; }, 900);
-  setTimeout(function(){ splash.style.display = 'none'; }, 1300);
-
-  render();
+  if (splash) {
+    setTimeout(function(){ bar.style.width = '100%'; }, 50);
+    setTimeout(function(){
+      splash.style.transition = 'opacity 0.4s';
+      splash.style.opacity = '0';
+    }, 800);
+    setTimeout(function(){
+      splash.parentNode.removeChild(splash);
+    }, 1300);
+  }
   }
 
   document.getElementById('f-all').addEventListener('click', function(){ setFilter('all'); });
