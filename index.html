@@ -7,16 +7,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Taskboard">
 <meta name="theme-color" content="#ff6b35">
+<link rel="manifest" href="/Taskboard/manifest.json">
 <title>Taskboard</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-body{font-family:Arial,sans-serif;background:#111;color:#fff;max-width:480px;margin:0 auto;min-height:100vh;overflow-x:hidden}
+body{font-family:Arial,sans-serif;background:#111;color:#fff;max-width:480px;margin:0 auto;min-height:100vh}
 header{padding:40px 20px 10px;display:flex;justify-content:space-between;align-items:center}
 h1{font-size:1.8rem;font-weight:900}
 h1 span{color:#ff6b35}
 #summary{background:#222;border-radius:20px;padding:5px 14px;font-size:0.8rem;color:#aaa}
-.filters{padding:10px 20px;display:flex;gap:8px;overflow-x:auto;-webkit-overflow-scrolling:touch}
-.filters::-webkit-scrollbar{display:none}
+.filters{padding:10px 20px;display:flex;gap:8px;overflow-x:auto}
 .filters button{flex-shrink:0;padding:6px 14px;border-radius:20px;border:1.5px solid #333;background:none;color:#aaa;font-size:0.8rem}
 .filters button.active{border-color:#ff6b35;color:#ff6b35}
 #list{padding:10px 16px 100px}
@@ -45,7 +45,7 @@ h1 span{color:#ff6b35}
 .sheet h2{font-size:1.1rem;margin-bottom:16px}
 .lbl{font-size:0.75rem;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;margin-top:14px}
 input[type=text],input[type=date]{width:100%;background:#111;border:1.5px solid #333;border-radius:10px;padding:13px 14px;color:#fff;font-size:1rem;outline:none;-webkit-appearance:none}
-input[type=text]:focus,input[type=date]:focus{border-color:#ff6b35}
+input:focus{border-color:#ff6b35}
 .cats{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:6px}
 .cat-btn{background:#111;border:1.5px solid #333;border-radius:10px;padding:10px 4px;text-align:center;font-size:0.6rem;color:#888;width:100%}
 .cat-btn div{font-size:1.3rem;margin-bottom:3px}
@@ -55,13 +55,6 @@ input[type=text]:focus,input[type=date]:focus{border-color:#ff6b35}
 </head>
 <body>
 
-<div id="splash" style="position:fixed;inset:0;background:#111;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999">
-  <div style="font-size:4rem">📋</div>
-  <div style="font-family:Arial,sans-serif;font-size:1.8rem;font-weight:900;color:#fff;margin-top:12px">Task<span style="color:#ff6b35">board</span></div>
-  <div style="margin-top:24px;width:40px;height:4px;background:#333;border-radius:4px;overflow:hidden">
-    <div id="bar" style="height:100%;width:0%;background:#ff6b35;transition:width 0.8s ease"></div>
-  </div>
-</div>
 <header>
   <h1>Task<span>board</span></h1>
   <div id="summary">0 tasks</div>
@@ -100,141 +93,117 @@ input[type=text]:focus,input[type=date]:focus{border-color:#ff6b35}
 </div>
 
 <script>
-(function(){
-  var tasks = [];
-  var filter = 'all';
-  var selCat = 'work';
+var tasks=[];
+var filter='all';
+var selCat='work';
 
-  // Load
-  try { tasks = JSON.parse(localStorage.getItem('tb3') || '[]'); } catch(e) {}
+try{tasks=JSON.parse(localStorage.getItem('tb3')||'[]')}catch(e){tasks=[]}
 
-  function save() {
-    try { localStorage.setItem('tb3', JSON.stringify(tasks)); } catch(e) {}
+function save(){try{localStorage.setItem('tb3',JSON.stringify(tasks))}catch(e){}}
+
+function esc(s){
+  var d=document.createElement('div');
+  d.appendChild(document.createTextNode(s));
+  return d.innerHTML;
+}
+
+function render(){
+  var list=document.getElementById('list');
+  var today=new Date().toISOString().slice(0,10);
+  var visible=tasks.filter(function(t){
+    if(filter==='active')return !t.done;
+    if(filter==='done')return t.done;
+    return true;
+  });
+  list.innerHTML='';
+  if(visible.length===0){
+    list.innerHTML='<div class="empty">No tasks yet.<br>Tap + New Task to begin.</div>';
+    return;
   }
+  visible.forEach(function(t){
+    var over=!t.done&&t.due&&t.due<today;
+    var div=document.createElement('div');
+    div.className='task '+t.cat+(t.done?' done':'');
 
-  function esc(s) {
-    var d = document.createElement('div');
-    d.appendChild(document.createTextNode(s));
-    return d.innerHTML;
-  }
+    var circle=document.createElement('div');
+    circle.className='circle'+(t.done?' checked':'');
+    circle.textContent=t.done?'✓':'';
+    circle.addEventListener('click',function(){t.done=!t.done;save();render();});
 
-  function render() {
-    var list = document.getElementById('list');
-    var today = new Date().toISOString().slice(0,10);
-    var visible = tasks.filter(function(t) {
-      if (filter === 'active') return !t.done;
-      if (filter === 'done') return t.done;
-      return true;
+    var info=document.createElement('div');
+    info.className='task-info';
+    info.innerHTML='<div class="task-name">'+esc(t.text)+'</div>'+
+      '<div class="task-meta">'+t.cat+(t.due?' · '+t.due+(over?' ⚠️':''):'')+'</div>';
+
+    var del=document.createElement('button');
+    del.className='del';
+    del.textContent='🗑';
+    del.addEventListener('click',function(){
+      tasks=tasks.filter(function(x){return x.id!==t.id;});
+      save();render();
     });
 
-    list.innerHTML = '';
-
-    if (visible.length === 0) {
-      list.innerHTML = '<div class="empty">No tasks here.<br>Tap + New Task to begin.</div>';
-    } else {
-      visible.forEach(function(t) {
-        var over = !t.done && t.due && t.due < today;
-        var div = document.createElement('div');
-        div.className = 'task ' + t.cat + (t.done ? ' done' : '');
-
-        var circle = document.createElement('div');
-        circle.className = 'circle' + (t.done ? ' checked' : '');
-        circle.textContent = t.done ? '✓' : '';
-        circle.addEventListener('click', function() {
-          t.done = !t.done; save(); render();
-        });
-
-        var info = document.createElement('div');
-        info.className = 'task-info';
-        info.innerHTML = '<div class="task-name">' + esc(t.text) + '</div>' +
-          '<div class="task-meta">' + t.cat + (t.due ? ' · ' + t.due + (over ? ' ⚠️' : '') : '') + '</div>';
-
-        var del = document.createElement('button');
-        del.className = 'del';
-        del.textContent = '🗑';
-        del.addEventListener('click', function() {
-          tasks = tasks.filter(function(x){ return x.id !== t.id; });
-          save(); render();
-        });
-
-        div.appendChild(circle);
-        div.appendChild(info);
-        div.appendChild(del);
-        list.appendChild(div);
-      });
-    }
-
-    var done = tasks.filter(function(t){ return t.done; }).length;
-    document.getElementById('summary').textContent = done + '/' + tasks.length + ' done';
-  }
-
-  // Filters
-  function setFilter(f) {
-    filter = f;
-    document.getElementById('f-all').className = f==='all' ? 'active' : '';
-    document.getElementById('f-active').className = f==='active' ? 'active' : '';
-    document.getElementById('f-done').className = f==='done' ? 'active' : '';
-    render();
-
-  // Splash screen — hide after app is ready
-  var splash = document.getElementById('splash');
-  var bar = document.getElementById('bar');
-  if (splash) {
-    setTimeout(function(){ bar.style.width = '100%'; }, 50);
-    setTimeout(function(){
-      splash.style.transition = 'opacity 0.4s';
-      splash.style.opacity = '0';
-    }, 800);
-    setTimeout(function(){
-      splash.parentNode.removeChild(splash);
-    }, 1300);
-  }
-  }
-
-  document.getElementById('f-all').addEventListener('click', function(){ setFilter('all'); });
-  document.getElementById('f-active').addEventListener('click', function(){ setFilter('active'); });
-  document.getElementById('f-done').addEventListener('click', function(){ setFilter('done'); });
-
-  // Sheet
-  function openSheet() {
-    document.getElementById('sheet').className = 'sheet show';
-    document.getElementById('overlay').className = 'overlay show';
-  }
-  function closeSheet() {
-    document.getElementById('sheet').className = 'sheet';
-    document.getElementById('overlay').className = 'overlay';
-  }
-
-  document.getElementById('btn-add').addEventListener('click', openSheet);
-  document.getElementById('overlay').addEventListener('click', closeSheet);
-
-  // Category
-  document.getElementById('cats').addEventListener('click', function(e) {
-    var btn = e.target.closest('.cat-btn');
-    if (!btn) return;
-    document.querySelectorAll('.cat-btn').forEach(function(b){ b.className = 'cat-btn'; });
-    btn.className = 'cat-btn sel';
-    selCat = btn.getAttribute('data-cat');
+    div.appendChild(circle);
+    div.appendChild(info);
+    div.appendChild(del);
+    list.appendChild(div);
   });
 
-  // Add task
-  document.getElementById('btn-submit').addEventListener('click', function() {
-    var text = document.getElementById('task-input').value.trim();
-    if (!text) return;
-    tasks.unshift({
-      id: Date.now(),
-      text: text,
-      cat: selCat,
-      due: document.getElementById('due-input').value || null,
-      done: false
-    });
-    save(); render(); closeSheet();
-    document.getElementById('task-input').value = '';
-    document.getElementById('due-input').value = '';
-  });
+  var done=tasks.filter(function(t){return t.done;}).length;
+  document.getElementById('summary').textContent=done+'/'+tasks.length+' done';
+}
 
+document.getElementById('f-all').addEventListener('click',function(){
+  filter='all';
+  document.getElementById('f-all').className='active';
+  document.getElementById('f-active').className='';
+  document.getElementById('f-done').className='';
   render();
-})();
+});
+document.getElementById('f-active').addEventListener('click',function(){
+  filter='active';
+  document.getElementById('f-all').className='';
+  document.getElementById('f-active').className='active';
+  document.getElementById('f-done').className='';
+  render();
+});
+document.getElementById('f-done').addEventListener('click',function(){
+  filter='done';
+  document.getElementById('f-all').className='';
+  document.getElementById('f-active').className='';
+  document.getElementById('f-done').className='active';
+  render();
+});
+
+document.getElementById('btn-add').addEventListener('click',function(){
+  document.getElementById('sheet').className='sheet show';
+  document.getElementById('overlay').className='overlay show';
+});
+document.getElementById('overlay').addEventListener('click',function(){
+  document.getElementById('sheet').className='sheet';
+  document.getElementById('overlay').className='overlay';
+});
+
+document.getElementById('cats').addEventListener('click',function(e){
+  var btn=e.target.closest('.cat-btn');
+  if(!btn)return;
+  document.querySelectorAll('.cat-btn').forEach(function(b){b.className='cat-btn';});
+  btn.className='cat-btn sel';
+  selCat=btn.getAttribute('data-cat');
+});
+
+document.getElementById('btn-submit').addEventListener('click',function(){
+  var text=document.getElementById('task-input').value.trim();
+  if(!text)return;
+  tasks.unshift({id:Date.now(),text:text,cat:selCat,due:document.getElementById('due-input').value||null,done:false});
+  save();render();
+  document.getElementById('sheet').className='sheet';
+  document.getElementById('overlay').className='overlay';
+  document.getElementById('task-input').value='';
+  document.getElementById('due-input').value='';
+});
+
+render();
 </script>
 </body>
 </html>
