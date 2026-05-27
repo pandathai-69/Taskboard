@@ -2,8 +2,8 @@
   "name": "Taskboard",
   "short_name": "Taskboard",
   "description": "Simple mobile task manager",
-  "start_url": "/taskboard/index.html",
-  "scope": "/taskboard/",
+  "start_url": ".",
+  "scope": ".",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#111111",
@@ -11,9 +11,9 @@
   "prefer_related_applications": false,
   "icons": [
     {
-      "src": "icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
