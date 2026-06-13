@@ -2,17 +2,24 @@
   "name": "Taskboard",
   "short_name": "Taskboard",
   "description": "Your personal task manager",
-  "start_url": "/Taskboard/",
+  "start_url": "/Taskboard/index.html",
   "scope": "/Taskboard/",
   "display": "standalone",
   "background_color": "#0f0f13",
-  "theme_color": "#0f0f13",
+  "theme_color": "#ff6b35",
   "orientation": "portrait",
+  "prefer_related_applications": false,
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='112' fill='%230f0f13'/%3E%3Crect x='120' y='160' width='272' height='36' rx='12' fill='%23ff6b35'/%3E%3Crect x='120' y='238' width='200' height='28' rx='10' fill='%232a2a38'/%3E%3Crect x='120' y='310' width='230' height='28' rx='10' fill='%232a2a38'/%3E%3Ccircle cx='88' cy='178' r='18' fill='%23ff6b35'/%3E%3Ccircle cx='88' cy='252' r='18' fill='%232a2a38' stroke='%234facfe' stroke-width='4'/%3E%3Ccircle cx='88' cy='324' r='18' fill='%232a2a38' stroke='%2334d399' stroke-width='4'/%3E%3C/svg%3E",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
