@@ -135,6 +135,143 @@
     .sheet-submit:active { transform:scale(.98); }
     input[type="date"]::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.5; }
     .overdue-card { border-color:rgba(255,107,53,.3) !important; }
+
+    /* SHOPPING SUBLIST */
+    .task-card.cat-shopping { flex-wrap:wrap; align-items:flex-start; }
+    .task-card.cat-shopping .check-circle { margin-top:2px; }
+    .task-card.cat-shopping .task-body { min-width:0; }
+    .task-card.cat-shopping .del-btn { margin-top:0; }
+
+    .shopping-sublist {
+      width:100%; margin-top:12px;
+      border-top:1px solid var(--border);
+      padding-top:10px;
+    }
+
+    .shop-item {
+      display:flex; align-items:center; gap:8px;
+      padding:6px 0;
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      animation:popIn .18s ease;
+    }
+    .shop-item:last-of-type { border-bottom:none; }
+
+    .shop-check {
+      width:20px; height:20px; border-radius:50%;
+      border:2px solid var(--cat-shopping);
+      flex-shrink:0; display:flex; align-items:center; justify-content:center;
+      cursor:pointer; transition:all .18s;
+    }
+    .shop-check.checked { background:var(--cat-shopping); border-color:var(--cat-shopping); }
+    .shop-check.checked svg { display:block; }
+    .shop-check svg { display:none; }
+
+    .shop-qty {
+      width:38px; background:var(--surface2); border:1.5px solid var(--border);
+      border-radius:8px; padding:5px 6px; font-family:'Nunito',sans-serif;
+      font-size:.82rem; color:var(--ink); text-align:center; outline:none;
+      -webkit-appearance:none; transition:border-color .15s;
+    }
+    .shop-qty:focus { border-color:var(--cat-shopping); }
+
+    .shop-name {
+      flex:1; background:none; border:none; border-bottom:1px solid transparent;
+      font-family:'Nunito',sans-serif; font-size:.88rem; color:var(--ink);
+      outline:none; padding:4px 2px; transition:border-color .15s;
+      -webkit-appearance:none;
+    }
+    .shop-name:focus { border-bottom-color:var(--cat-shopping); }
+    .shop-name.bought { text-decoration:line-through; color:var(--ink-dim); }
+    .shop-name::placeholder { color:var(--ink-dim); }
+
+    .shop-del {
+      background:none; border:none; color:var(--border);
+      padding:4px; cursor:pointer; border-radius:6px; flex-shrink:0;
+      transition:color .15s;
+    }
+    .shop-del:active { color:var(--accent); }
+
+    .shop-add-row {
+      display:flex; align-items:center; gap:8px; margin-top:8px;
+    }
+    .shop-add-btn {
+      display:flex; align-items:center; gap:5px;
+      background:rgba(251,191,36,.1); border:1.5px dashed rgba(251,191,36,.35);
+      border-radius:10px; padding:7px 12px; color:var(--cat-shopping);
+      font-family:'Nunito',sans-serif; font-size:.8rem; font-weight:600;
+      cursor:pointer; transition:background .15s; width:100%;
+      justify-content:center;
+    }
+    .shop-add-btn:active { background:rgba(251,191,36,.2); }
+
+    .shop-summary {
+      font-size:.7rem; color:var(--ink-dim); margin-top:6px; text-align:right;
+    }
+
+    /* REMINDER BADGE on card */
+    .reminder-badge {
+      display:inline-flex; align-items:center; gap:3px;
+      font-size:.68rem; font-weight:600; color:var(--accent2);
+      background:rgba(255,209,102,.1); border-radius:20px;
+      padding:2px 7px;
+    }
+
+    /* REMINDER SECTION in sheet */
+    .reminder-toggle {
+      display:flex; align-items:center; justify-content:space-between;
+      background:var(--surface2); border:1.5px solid var(--border);
+      border-radius:12px; padding:13px 16px; cursor:pointer;
+      transition:border-color .18s;
+    }
+    .reminder-toggle.on { border-color:var(--accent2); }
+    .reminder-toggle-label { font-size:.9rem; font-weight:500; display:flex; align-items:center; gap:8px; }
+    .toggle-pill {
+      width:38px; height:22px; border-radius:20px; background:var(--border);
+      position:relative; transition:background .2s; flex-shrink:0;
+    }
+    .toggle-pill::after {
+      content:''; position:absolute; width:16px; height:16px; border-radius:50%;
+      background:#fff; top:3px; left:3px; transition:transform .2s;
+    }
+    .reminder-toggle.on .toggle-pill { background:var(--accent2); }
+    .reminder-toggle.on .toggle-pill::after { transform:translateX(16px); }
+
+    .reminder-options {
+      display:none; margin-top:12px;
+      background:var(--surface2); border-radius:12px; padding:14px;
+      border:1.5px solid var(--border);
+    }
+    .reminder-options.visible { display:block; }
+
+    .reminder-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; flex-wrap:wrap; }
+    .reminder-row:last-child { margin-bottom:0; }
+    .reminder-row label { font-size:.75rem; color:var(--ink-dim); font-weight:600; text-transform:uppercase; letter-spacing:.5px; width:100%; }
+
+    .r-type-btn {
+      flex:1; padding:8px 6px; border-radius:8px; border:1.5px solid var(--border);
+      background:none; color:var(--ink-dim); font-family:'Nunito',sans-serif;
+      font-size:.78rem; font-weight:600; cursor:pointer; text-align:center;
+      transition:all .15s; white-space:nowrap;
+    }
+    .r-type-btn.active { border-color:var(--accent2); color:var(--accent2); background:rgba(255,209,102,.1); }
+
+    .r-input {
+      flex:1; background:var(--surface); border:1.5px solid var(--border);
+      border-radius:8px; padding:8px 10px; font-family:'Nunito',sans-serif;
+      font-size:.88rem; color:var(--ink); outline:none; transition:border-color .15s;
+      -webkit-appearance:none; min-width:0;
+    }
+    .r-input:focus { border-color:var(--accent2); }
+    .r-input[type="time"]::-webkit-calendar-picker-indicator { filter:invert(1); opacity:.4; }
+
+    .r-days-select {
+      background:var(--surface); border:1.5px solid var(--border);
+      border-radius:8px; padding:8px 10px; font-family:'Nunito',sans-serif;
+      font-size:.88rem; color:var(--ink); outline:none; cursor:pointer;
+    }
+
+    .r-sub { display:none; }
+    .r-sub.visible { display:flex; flex-direction:column; gap:10px; margin-top:10px; }
   </style>
 </head>
 <body>
@@ -200,6 +337,50 @@
     <div class="field-label">Due date (optional)</div>
     <input type="date" id="due-input"/>
   </div>
+
+  <!-- REMINDER -->
+  <div class="field-group">
+    <div class="field-label">Reminder</div>
+    <div class="reminder-toggle" id="reminder-toggle">
+      <span class="reminder-toggle-label">🔔 Set a reminder</span>
+      <div class="toggle-pill"></div>
+    </div>
+    <div class="reminder-options" id="reminder-options">
+      <!-- Type selector -->
+      <div class="reminder-row">
+        <label>Reminder type</label>
+        <button class="r-type-btn active" data-rtype="daily">🕘 Daily time</button>
+        <button class="r-type-btn" data-rtype="before">📅 Before due date</button>
+      </div>
+
+      <!-- Daily time sub-section -->
+      <div class="r-sub visible" id="r-daily-sub">
+        <div class="reminder-row">
+          <label>Fire every day at</label>
+          <input class="r-input" type="time" id="r-daily-time" value="09:00"/>
+        </div>
+      </div>
+
+      <!-- Before due date sub-section -->
+      <div class="r-sub" id="r-before-sub">
+        <div class="reminder-row">
+          <label>How many days before due</label>
+          <select class="r-days-select r-input" id="r-before-days">
+            <option value="0">On the due day</option>
+            <option value="1" selected>1 day before</option>
+            <option value="2">2 days before</option>
+            <option value="3">3 days before</option>
+            <option value="7">1 week before</option>
+          </select>
+        </div>
+        <div class="reminder-row">
+          <label>At what time</label>
+          <input class="r-input" type="time" id="r-before-time" value="09:00"/>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <button class="sheet-submit" id="submit-btn">Add Task →</button>
 </div>
 
@@ -207,8 +388,23 @@
   // ── Service Worker ──────────────────────────────
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/Taskboard/sw.js', { scope: '/Taskboard/' })
-      .then(() => console.log('SW registered ✓'))
+      .then(() => { console.log('SW registered ✓'); syncTasksToSW(); })
       .catch(e => console.warn('SW failed:', e));
+  }
+
+  // ── Notification permission ─────────────────────
+  async function requestNotifPermission() {
+    if (!('Notification' in window)) return false;
+    if (Notification.permission === 'granted') return true;
+    if (Notification.permission === 'denied') return false;
+    const result = await Notification.requestPermission();
+    return result === 'granted';
+  }
+
+  // ── Sync tasks to SW for reminder heartbeat ─────
+  function syncTasksToSW() {
+    if (!navigator.serviceWorker.controller) return;
+    navigator.serviceWorker.controller.postMessage({ type: 'SYNC_TASKS', tasks });
   }
 
   // ── PWA Install Prompt ──────────────────────────
@@ -232,7 +428,7 @@
   // ── State ───────────────────────────────────────
   let tasks = JSON.parse(localStorage.getItem('tb_tasks') || '[]');
   let filterStatus = 'all', filterCat = null, selectedCat = 'work';
-  const save = () => localStorage.setItem('tb_tasks', JSON.stringify(tasks));
+  const save = () => { localStorage.setItem('tb_tasks', JSON.stringify(tasks)); syncTasksToSW(); }
 
   // ── Render ──────────────────────────────────────
   function render() {
@@ -286,24 +482,216 @@
         <div class="task-foot">
           <span class="badge">${lbl}</span>
           ${ds?`<span class="due-tag ${over?'overdue':''}">📅 ${ds}${over?' · Overdue':''}</span>`:''}
+          ${task.reminder ? `<span class="reminder-badge">🔔 ${reminderLabel(task.reminder)}</span>` : ''}
         </div>
       </div>
       <button class="del-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
         </svg>
-      </button>`;
+      </button>
+      ${task.cat === 'shopping' ? renderSublist(task) : ''}`;
+
     card.querySelector('.check-circle').addEventListener('click', () => { task.done=!task.done; save(); render(); });
     card.querySelector('.del-btn').addEventListener('click', e => {
       e.stopPropagation();
       Object.assign(card.style,{transition:'opacity .2s,transform .2s',opacity:'0',transform:'scale(0.92)'});
       setTimeout(()=>{ tasks=tasks.filter(t=>t.id!==task.id); save(); render(); },200);
     });
+
+    if (task.cat === 'shopping') bindSublist(card, task);
     return card;
+  }
+
+  function renderSublist(task) {
+    if (!task.items) task.items = [];
+    const rows = task.items.map((item, i) => `
+      <div class="shop-item" data-idx="${i}">
+        <div class="shop-check ${item.done?'checked':''}" data-idx="${i}">
+          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+            <path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <input class="shop-qty" type="number" min="1" value="${esc(String(item.qty||1))}" data-idx="${i}" placeholder="1"/>
+        <input class="shop-name ${item.done?'bought':''}" type="text" value="${esc(item.name||'')}" data-idx="${i}" placeholder="Item name…"/>
+        <button class="shop-del" data-idx="${i}">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>`).join('');
+
+    const bought  = task.items.filter(i=>i.done).length;
+    const total   = task.items.length;
+    const summary = total > 0 ? `${bought}/${total} items checked` : '';
+
+    return `
+      <div class="shopping-sublist">
+        ${rows}
+        <div class="shop-add-row">
+          <button class="shop-add-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add item
+          </button>
+        </div>
+        ${summary ? `<div class="shop-summary">${summary}</div>` : ''}
+      </div>`;
+  }
+
+  function bindSublist(card, task) {
+    const sublist = card.querySelector('.shopping-sublist');
+    if (!sublist) return;
+
+    // Check toggle
+    sublist.querySelectorAll('.shop-check').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const i = +el.dataset.idx;
+        task.items[i].done = !task.items[i].done;
+        save();
+        // update visually without full re-render
+        el.classList.toggle('checked', task.items[i].done);
+        const nameEl = sublist.querySelector(`.shop-name[data-idx="${i}"]`);
+        if (nameEl) nameEl.classList.toggle('bought', task.items[i].done);
+        updateSummary(sublist, task);
+      });
+    });
+
+    // Qty change
+    sublist.querySelectorAll('.shop-qty').forEach(el => {
+      el.addEventListener('change', e => {
+        e.stopPropagation();
+        const i = +el.dataset.idx;
+        task.items[i].qty = Math.max(1, parseInt(el.value)||1);
+        el.value = task.items[i].qty;
+        save();
+      });
+      el.addEventListener('click', e => e.stopPropagation());
+    });
+
+    // Name change
+    sublist.querySelectorAll('.shop-name').forEach(el => {
+      el.addEventListener('input', e => {
+        e.stopPropagation();
+        const i = +el.dataset.idx;
+        task.items[i].name = el.value;
+        save();
+      });
+      el.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); addShopItem(sublist, task); }
+        e.stopPropagation();
+      });
+      el.addEventListener('click', e => e.stopPropagation());
+    });
+
+    // Delete item
+    sublist.querySelectorAll('.shop-del').forEach(el => {
+      el.addEventListener('click', e => {
+        e.stopPropagation();
+        const i = +el.dataset.idx;
+        task.items.splice(i, 1);
+        save();
+        // re-render sublist in place
+        const newHtml = renderSublist(task);
+        const tmp = document.createElement('div');
+        tmp.innerHTML = newHtml;
+        sublist.replaceWith(tmp.firstElementChild);
+        bindSublist(card, task);
+      });
+    });
+
+    // Add item
+    sublist.querySelector('.shop-add-btn').addEventListener('click', e => {
+      e.stopPropagation();
+      addShopItem(sublist, task, card);
+    });
+  }
+
+  function addShopItem(sublist, task, card) {
+    if (!task.items) task.items = [];
+    task.items.push({ name:'', qty:1, done:false });
+    save();
+    const newHtml = renderSublist(task);
+    const tmp = document.createElement('div');
+    tmp.innerHTML = newHtml;
+    const newSublist = tmp.firstElementChild;
+    sublist.replaceWith(newSublist);
+    bindSublist(card || sublist.closest('.task-card'), task);
+    // focus the new name input
+    const inputs = newSublist.querySelectorAll('.shop-name');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }
+
+  function updateSummary(sublist, task) {
+    let s = sublist.querySelector('.shop-summary');
+    const bought = task.items.filter(i=>i.done).length;
+    const total  = task.items.length;
+    if (total === 0) { if(s) s.remove(); return; }
+    if (!s) { s = document.createElement('div'); s.className='shop-summary'; sublist.appendChild(s); }
+    s.textContent = `${bought}/${total} items checked`;
   }
 
   const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   const formatDate = iso => { const [y,m,d]=iso.split('-'); return new Date(y,m-1,d).toLocaleDateString('en-US',{month:'short',day:'numeric'}); };
+  const reminderLabel = r => r.dailyTime ? `Daily ${r.dailyTime}` : `${r.beforeDueDays===0?'Due day':r.beforeDueDays+'d before'} at ${r.customTime}`;
+
+  // ── Reminder UI wiring ────────────────────────────
+  let reminderEnabled = false;
+  let reminderType = 'daily'; // 'daily' | 'before'
+
+  const reminderToggle  = document.getElementById('reminder-toggle');
+  const reminderOptions = document.getElementById('reminder-options');
+  const rDailySub       = document.getElementById('r-daily-sub');
+  const rBeforeSub      = document.getElementById('r-before-sub');
+
+  reminderToggle.addEventListener('click', async () => {
+    reminderEnabled = !reminderEnabled;
+    reminderToggle.classList.toggle('on', reminderEnabled);
+    reminderOptions.classList.toggle('visible', reminderEnabled);
+    if (reminderEnabled) {
+      const granted = await requestNotifPermission();
+      if (!granted) {
+        reminderEnabled = false;
+        reminderToggle.classList.remove('on');
+        reminderOptions.classList.remove('visible');
+        alert('Please allow notifications in your browser settings to use reminders.');
+      }
+    }
+  });
+
+  document.querySelectorAll('.r-type-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      reminderType = btn.dataset.rtype;
+      document.querySelectorAll('.r-type-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      rDailySub.classList.toggle('visible', reminderType === 'daily');
+      rBeforeSub.classList.toggle('visible', reminderType === 'before');
+    });
+  });
+
+  function getReminder() {
+    if (!reminderEnabled) return null;
+    if (reminderType === 'daily') {
+      return { dailyTime: document.getElementById('r-daily-time').value || '09:00' };
+    } else {
+      return {
+        beforeDue: true,
+        beforeDueDays: parseInt(document.getElementById('r-before-days').value),
+        customTime: document.getElementById('r-before-time').value || '09:00'
+      };
+    }
+  }
+
+  function resetReminderUI() {
+    reminderEnabled = false;
+    reminderType = 'daily';
+    reminderToggle.classList.remove('on');
+    reminderOptions.classList.remove('visible');
+    document.querySelectorAll('.r-type-btn').forEach((b,i) => b.classList.toggle('active', i===0));
+    rDailySub.classList.add('visible');
+    rBeforeSub.classList.remove('visible');
+    document.getElementById('r-daily-time').value = '09:00';
+    document.getElementById('r-before-time').value = '09:00';
+    document.getElementById('r-before-days').value = '1';
+  }
 
   // ── Sheet ────────────────────────────────────────
   const sheet   = document.getElementById('sheet');
@@ -327,10 +715,12 @@
   function addTask() {
     const text = document.getElementById('task-input').value.trim();
     if (!text) { document.getElementById('task-input').focus(); return; }
-    tasks.unshift({id:Date.now(),text,cat:selectedCat,due:document.getElementById('due-input').value||null,done:false});
+    const reminder = getReminder();
+    tasks.unshift({id:Date.now(),text,cat:selectedCat,due:document.getElementById('due-input').value||null,done:false,items:selectedCat==='shopping'?[{name:'',qty:1,done:false}]:[],reminder});
     save(); render(); closeSheet();
     document.getElementById('task-input').value='';
     document.getElementById('due-input').value='';
+    resetReminderUI();
   }
   document.getElementById('submit-btn').addEventListener('click', addTask);
   document.getElementById('task-input').addEventListener('keydown', e=>{if(e.key==='Enter')addTask();});
