@@ -7,62 +7,13 @@
   <meta name="apple-mobile-web-app-capable" content="yes"/>
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
   <meta name="apple-mobile-web-app-title" content="Taskboard"/>
-  <meta name="theme-color" content="#0f0f13"/>
+  <meta name="theme-color" content="#ff6b35"/>
   <meta name="description" content="Your personal task manager"/>
   <title>Taskboard</title>
 
-  <script>
-    // ── Inline Manifest (works everywhere) ──────────────────────────
-    const manifest = {
-      name: "Taskboard",
-      short_name: "Taskboard",
-      description: "Your personal task manager",
-      start_url: "/Taskboard/",
-      scope: "/Taskboard/",
-      display: "standalone",
-      background_color: "#0f0f13",
-      theme_color: "#0f0f13",
-      orientation: "portrait",
-      icons: [{
-        src: "data:image/svg+xml," + encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='112' fill='%230f0f13'/><rect x='120' y='160' width='272' height='36' rx='12' fill='%23ff6b35'/><rect x='120' y='238' width='200' height='28' rx='10' fill='%232a2a38'/><rect x='120' y='310' width='230' height='28' rx='10' fill='%232a2a38'/><circle cx='88' cy='178' r='18' fill='%23ff6b35'/><circle cx='88' cy='252' r='18' fill='%232a2a38' stroke='%234facfe' stroke-width='4'/><circle cx='88' cy='324' r='18' fill='%232a2a38' stroke='%2334d399' stroke-width='4'/></svg>`),
-        sizes: "512x512", type: "image/svg+xml", purpose: "any maskable"
-      }]
-    };
-    const mBlob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-    const mLink = document.createElement('link');
-    mLink.rel = 'manifest';
-    mLink.href = URL.createObjectURL(mBlob);
-    document.currentScript.before(mLink);
-
-    // ── Inline Service Worker via blob (works in preview + GitHub Pages) ──
-    const swCode = `
-const CACHE = 'taskboard-v2';
-const ASSETS = ['/Taskboard/', '/Taskboard/index.html', '/Taskboard/manifest.json'];
-self.addEventListener('install', e => {
-  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(()=>{})));
-  self.skipWaiting();
-});
-self.addEventListener('activate', e => {
-  e.waitUntil(caches.keys().then(keys =>
-    Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
-  ));
-  self.clients.claim();
-});
-self.addEventListener('fetch', e => {
-  e.respondWith(
-    caches.match(e.request).then(r => r || fetch(e.request)).catch(() => new Response('Offline'))
-  );
-});`;
-    if ('serviceWorker' in navigator) {
-      const swBlob = new Blob([swCode], { type: 'application/javascript' });
-      const swURL  = URL.createObjectURL(swBlob);
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register(swURL)
-          .then(() => console.log('SW registered ✓'))
-          .catch(e => console.info('SW skipped (preview mode):', e.message));
-      });
-    }
-  </script>
+  <!-- Real manifest file — required for Chrome install prompt -->
+  <link rel="manifest" href="/Taskboard/manifest.json"/>
+  <link rel="apple-touch-icon" href="/Taskboard/icon-192.png"/>
 
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Nunito:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -77,59 +28,32 @@ self.addEventListener('fetch', e => {
       --safe-bottom: env(safe-area-inset-bottom, 0px);
     }
     html { height: 100%; }
-    body {
-      font-family: 'Nunito', sans-serif; background: var(--bg); color: var(--ink);
-      display: flex; flex-direction: column; height: 100%;
-      max-width: 480px; margin: 0 auto; overflow: hidden;
-    }
+    body { font-family:'Nunito',sans-serif; background:var(--bg); color:var(--ink); display:flex; flex-direction:column; height:100%; max-width:480px; margin:0 auto; overflow:hidden; }
 
     /* INSTALL BANNER */
-    #install-banner {
-      display: none; position: fixed;
-      bottom: calc(var(--bottom-nav) + 12px + var(--safe-bottom));
-      left: 50%; transform: translateX(-50%);
-      width: calc(100% - 32px); max-width: 448px;
-      background: var(--surface); border: 1.5px solid var(--accent);
-      border-radius: 20px; padding: 16px 18px; z-index: 200;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-      animation: slideUp 0.35s cubic-bezier(0.34,1.3,0.64,1);
-    }
-    #install-banner.show { display: flex; gap: 14px; align-items: center; }
-    @keyframes slideUp {
-      from { opacity:0; transform: translateX(-50%) translateY(20px); }
-      to   { opacity:1; transform: translateX(-50%) translateY(0); }
-    }
-    .install-icon {
-      width: 48px; height: 48px; background: linear-gradient(135deg,#ff6b35,#ff9f1c);
-      border-radius: 12px; flex-shrink: 0; display: flex; align-items: center;
-      justify-content: center; font-size: 1.5rem;
-    }
-    .install-text { flex: 1; }
-    .install-text strong { display: block; font-family:'Syne',sans-serif; font-size:.95rem; margin-bottom:2px; }
+    #install-banner { display:none; position:fixed; bottom:calc(var(--bottom-nav) + 12px + var(--safe-bottom)); left:50%; transform:translateX(-50%); width:calc(100% - 32px); max-width:448px; background:var(--surface); border:1.5px solid var(--accent); border-radius:20px; padding:16px 18px; z-index:200; box-shadow:0 8px 32px rgba(0,0,0,0.5); animation:slideUp .35s cubic-bezier(.34,1.3,.64,1); }
+    #install-banner.show { display:flex; gap:14px; align-items:center; }
+    @keyframes slideUp { from{opacity:0;transform:translateX(-50%) translateY(20px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+    .install-icon { width:48px; height:48px; background:linear-gradient(135deg,#ff6b35,#ff9f1c); border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:1.5rem; }
+    .install-text { flex:1; }
+    .install-text strong { display:block; font-family:'Syne',sans-serif; font-size:.95rem; margin-bottom:2px; }
     .install-text span { font-size:.75rem; color:var(--ink-dim); }
     .install-actions { display:flex; gap:8px; flex-shrink:0; }
-    .btn-install {
-      background:var(--accent); color:#fff; border:none; border-radius:10px;
-      padding:8px 16px; font-family:'Syne',sans-serif; font-size:.85rem;
-      font-weight:700; cursor:pointer; white-space:nowrap;
-    }
-    .btn-dismiss {
-      background:var(--surface2); color:var(--ink-dim); border:none;
-      border-radius:10px; padding:8px 10px; font-size:.85rem; cursor:pointer;
-    }
+    .btn-install { background:var(--accent); color:#fff; border:none; border-radius:10px; padding:8px 16px; font-family:'Syne',sans-serif; font-size:.85rem; font-weight:700; cursor:pointer; white-space:nowrap; }
+    .btn-dismiss { background:var(--surface2); color:var(--ink-dim); border:none; border-radius:10px; padding:8px 10px; font-size:.85rem; cursor:pointer; }
 
     /* HEADER */
-    .app-header { padding: calc(var(--safe-top) + 48px) 20px 14px; flex-shrink:0; background:var(--bg); }
+    .app-header { padding:calc(var(--safe-top) + 48px) 20px 14px; flex-shrink:0; background:var(--bg); }
     .header-row { display:flex; align-items:center; justify-content:space-between; }
-    .app-title { font-family:'Syne',sans-serif; font-size:1.9rem; font-weight:800; letter-spacing:-0.5px; }
+    .app-title { font-family:'Syne',sans-serif; font-size:1.9rem; font-weight:800; letter-spacing:-.5px; }
     .app-title span { color:var(--accent); }
     .summary-pill { background:var(--surface2); border-radius:20px; padding:6px 14px; font-size:.78rem; color:var(--ink-dim); font-weight:500; }
     .summary-pill b { color:var(--accent2); font-weight:600; }
 
     /* CHIPS */
-    .chip-scroll { padding:8px 20px 4px; display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-shrink:0; }
+    .chip-scroll { padding:8px 20px 4px; display:flex; gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; flex-shrink:0; }
     .chip-scroll::-webkit-scrollbar { display:none; }
-    .chip { flex-shrink:0; scroll-snap-align:start; padding:7px 16px; border-radius:20px; font-size:.8rem; font-weight:600; border:1.5px solid var(--border); background:none; color:var(--ink-dim); cursor:pointer; transition:all .18s; white-space:nowrap; font-family:'Nunito',sans-serif; }
+    .chip { flex-shrink:0; padding:7px 16px; border-radius:20px; font-size:.8rem; font-weight:600; border:1.5px solid var(--border); background:none; color:var(--ink-dim); cursor:pointer; transition:all .18s; white-space:nowrap; font-family:'Nunito',sans-serif; }
     .chip.active-chip { border-color:var(--accent); color:var(--accent); background:rgba(255,107,53,.1); }
     .chip.cat-work.active-chip    { border-color:var(--cat-work);     color:var(--cat-work);     background:rgba(79,172,254,.1); }
     .chip.cat-personal.active-chip { border-color:var(--cat-personal); color:var(--cat-personal); background:rgba(167,139,250,.1); }
@@ -137,7 +61,7 @@ self.addEventListener('fetch', e => {
     .chip.cat-shopping.active-chip { border-color:var(--cat-shopping); color:var(--cat-shopping); background:rgba(251,191,36,.1); }
     .chip.cat-other.active-chip   { border-color:var(--cat-other);    color:var(--cat-other);    background:rgba(148,163,184,.1); }
 
-    /* SCROLL AREA */
+    /* SCROLL */
     .scroll-area { flex:1; overflow-y:auto; -webkit-overflow-scrolling:touch; padding:10px 16px calc(var(--bottom-nav) + var(--safe-bottom) + 20px); scrollbar-width:none; }
     .scroll-area::-webkit-scrollbar { display:none; }
 
@@ -183,12 +107,12 @@ self.addEventListener('fetch', e => {
     .empty { text-align:center; padding:50px 20px; color:var(--ink-dim); font-size:.88rem; }
     .empty-icon { font-size:2.4rem; margin-bottom:10px; }
 
-    /* BOTTOM BAR */
+    /* FAB */
     .bottom-bar { position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; padding:10px 20px calc(var(--safe-bottom) + 10px); background:linear-gradient(to top,var(--bg) 70%,transparent); display:flex; align-items:center; justify-content:center; z-index:50; }
     .fab { background:var(--accent); color:#fff; border:none; border-radius:50px; padding:14px 32px; font-family:'Syne',sans-serif; font-size:1rem; font-weight:700; cursor:pointer; box-shadow:0 8px 24px rgba(255,107,53,.4); transition:transform .15s,box-shadow .15s; display:flex; align-items:center; gap:8px; }
     .fab:active { transform:scale(.96); box-shadow:0 4px 12px rgba(255,107,53,.3); }
 
-    /* BOTTOM SHEET */
+    /* SHEET */
     .sheet-overlay { position:fixed; inset:0; background:rgba(0,0,0,.6); z-index:100; opacity:0; pointer-events:none; transition:opacity .25s; backdrop-filter:blur(3px); }
     .sheet-overlay.open { opacity:1; pointer-events:all; }
     .sheet { position:fixed; bottom:0; left:50%; transform:translateX(-50%) translateY(100%); width:100%; max-width:480px; background:var(--surface); border-radius:24px 24px 0 0; padding:12px 20px calc(var(--safe-bottom) + 32px); z-index:101; transition:transform .3s cubic-bezier(.34,1.2,.64,1); }
@@ -219,7 +143,7 @@ self.addEventListener('fetch', e => {
   <div class="install-icon">✅</div>
   <div class="install-text">
     <strong>Install Taskboard</strong>
-    <span>Add to home screen for app experience</span>
+    <span>Tap Install for the full app experience</span>
   </div>
   <div class="install-actions">
     <button class="btn-install" id="btn-install">Install</button>
@@ -255,7 +179,6 @@ self.addEventListener('fetch', e => {
 </div>
 
 <div class="sheet-overlay" id="overlay"></div>
-
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
   <h2>Add a Task</h2>
@@ -281,14 +204,22 @@ self.addEventListener('fetch', e => {
 </div>
 
 <script>
-  // ── PWA Install ─────────────────────────────────
+  // ── Service Worker ──────────────────────────────
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/Taskboard/sw.js', { scope: '/Taskboard/' })
+      .then(() => console.log('SW registered ✓'))
+      .catch(e => console.warn('SW failed:', e));
+  }
+
+  // ── PWA Install Prompt ──────────────────────────
   let deferredPrompt = null;
   const banner  = document.getElementById('install-banner');
   const btnInst = document.getElementById('btn-install');
   const btnDism = document.getElementById('btn-dismiss');
 
   window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault(); deferredPrompt = e;
+    e.preventDefault();
+    deferredPrompt = e;
     setTimeout(() => banner.classList.add('show'), 2000);
   });
   btnInst.addEventListener('click', async () => {
@@ -365,8 +296,8 @@ self.addEventListener('fetch', e => {
     card.querySelector('.check-circle').addEventListener('click', () => { task.done=!task.done; save(); render(); });
     card.querySelector('.del-btn').addEventListener('click', e => {
       e.stopPropagation();
-      Object.assign(card.style, { transition:'opacity .2s,transform .2s', opacity:'0', transform:'scale(0.92)' });
-      setTimeout(() => { tasks=tasks.filter(t=>t.id!==task.id); save(); render(); }, 200);
+      Object.assign(card.style,{transition:'opacity .2s,transform .2s',opacity:'0',transform:'scale(0.92)'});
+      setTimeout(()=>{ tasks=tasks.filter(t=>t.id!==task.id); save(); render(); },200);
     });
     return card;
   }
@@ -375,19 +306,19 @@ self.addEventListener('fetch', e => {
   const formatDate = iso => { const [y,m,d]=iso.split('-'); return new Date(y,m-1,d).toLocaleDateString('en-US',{month:'short',day:'numeric'}); };
 
   // ── Sheet ────────────────────────────────────────
-  const sheet = document.getElementById('sheet');
+  const sheet   = document.getElementById('sheet');
   const overlay = document.getElementById('overlay');
   const openSheet  = () => { sheet.classList.add('open'); overlay.classList.add('open'); setTimeout(()=>document.getElementById('task-input').focus(),350); };
   const closeSheet = () => { sheet.classList.remove('open'); overlay.classList.remove('open'); };
 
   document.getElementById('open-sheet').addEventListener('click', openSheet);
   overlay.addEventListener('click', closeSheet);
-  let startY=0;
+  let startY = 0;
   sheet.addEventListener('touchstart', e=>{startY=e.touches[0].clientY;},{passive:true});
   sheet.addEventListener('touchend',   e=>{if(e.changedTouches[0].clientY-startY>80)closeSheet();},{passive:true});
 
   document.querySelectorAll('.cat-opt').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', ()=>{
       document.querySelectorAll('.cat-opt').forEach(b=>b.className='cat-opt');
       btn.classList.add(`sel-${btn.dataset.cat}`); selectedCat=btn.dataset.cat;
     });
@@ -396,25 +327,25 @@ self.addEventListener('fetch', e => {
   function addTask() {
     const text = document.getElementById('task-input').value.trim();
     if (!text) { document.getElementById('task-input').focus(); return; }
-    tasks.unshift({ id:Date.now(), text, cat:selectedCat, due:document.getElementById('due-input').value||null, done:false });
+    tasks.unshift({id:Date.now(),text,cat:selectedCat,due:document.getElementById('due-input').value||null,done:false});
     save(); render(); closeSheet();
     document.getElementById('task-input').value='';
     document.getElementById('due-input').value='';
   }
   document.getElementById('submit-btn').addEventListener('click', addTask);
-  document.getElementById('task-input').addEventListener('keydown', e=>{ if(e.key==='Enter') addTask(); });
+  document.getElementById('task-input').addEventListener('keydown', e=>{if(e.key==='Enter')addTask();});
 
   // ── Filters ──────────────────────────────────────
   document.getElementById('chip-scroll').querySelectorAll('.chip').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', ()=>{
       if (btn.dataset.filter) {
         filterStatus=btn.dataset.filter;
         document.querySelectorAll('[data-filter]').forEach(b=>b.classList.remove('active-chip'));
         btn.classList.add('active-chip');
       } else if (btn.dataset.cat) {
         const cat=btn.dataset.cat;
-        if (filterCat===cat) { filterCat=null; btn.classList.remove('active-chip'); }
-        else { filterCat=cat; document.querySelectorAll('[data-cat]').forEach(b=>b.classList.remove('active-chip')); btn.classList.add('active-chip'); }
+        if(filterCat===cat){filterCat=null;btn.classList.remove('active-chip');}
+        else{filterCat=cat;document.querySelectorAll('[data-cat]').forEach(b=>b.classList.remove('active-chip'));btn.classList.add('active-chip');}
       }
       render();
     });
